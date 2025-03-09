@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
@@ -7,6 +7,7 @@ import { migrate } from "drizzle-orm/mysql2/migrator";
 import userController from "./controllers/user.controller";
 import authController from "./controllers/auth.controller";
 import { authenticateJWT } from "./middlewares/authMiddleware";
+import { handleError } from "./middlewares/handleErrorMiddleware";
 
 dotenv.config();
 
@@ -22,6 +23,9 @@ app.use(cookieParser());
 app.use('/api', authController)
 app.use('/api/users', authenticateJWT, userController);
 
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  handleError(error, req, res, next); 
+});
 async function startServer() {
   try {
     await migrate(db, { migrationsFolder: "drizzle" });
