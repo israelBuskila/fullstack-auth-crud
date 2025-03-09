@@ -4,7 +4,9 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import db from "./db/db";
 import { migrate } from "drizzle-orm/mysql2/migrator";
-import userRouter from "./routes/user.router";
+import userController from "./controllers/user.controller";
+import authController from "./controllers/auth.controller";
+import { authenticateJWT } from "./middlewares/authMiddleware";
 
 dotenv.config();
 
@@ -13,12 +15,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/api', userRouter);
-
+app.use('/api', authController)
+app.use('/api/users', authenticateJWT, userController);
 
 async function startServer() {
   try {

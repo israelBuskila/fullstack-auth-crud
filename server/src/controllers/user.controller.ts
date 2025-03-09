@@ -1,39 +1,42 @@
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { UserService } from "../services/user.service";
+import { validateDTO } from "../dto/validateDTO";
+import { CreateUserDto, UpdateUserDto } from "../dto/user.dto";
+
+const router = Router();
 
 const userService = new UserService()
 
-class UserController {
-  async getUsers(req: Request, res: Response) {
-    const result = await userService.getAllUsers()
-    res.send(result)
-  }
+router.get("/", async (req: Request, res: Response) => {
+  const result = await userService.getAllUsers()
+  res.send(result)
+});
 
-  async getUserById(req: Request, res: Response) {
-    const userId = Number(req.params.id);
-    const result = await userService.getUserById(userId)
-    res.send(result)
-  }
+router.get("/:id", async (req: Request, res: Response) => {
+  const userId = Number(req.params.id);
+  const result = await userService.getUserById(userId)
+  res.send(result)
+});
 
-  async createUser(req: Request, res: Response) {
-    const newUser = req.body;
-    console.log(newUser)
-    const result = await userService.createUser(newUser)
-    res.status(201).send(result);
-  }
+router.post("/",  async (req: Request, res: Response) => {
+  const newUser = await validateDTO(CreateUserDto, req.body)
+  const result = await userService.createUser(newUser)
+  res.status(201).send(result);
+});
 
-  async updateUser(req: Request, res: Response) {
-    const userId = Number(req.params.id);
-    const updatedData = req.body;
-    const result = await userService.updateUser(userId, updatedData)
-    res.send(result);
-  }
 
-  async deleteUser(req: Request, res: Response) {
-    const userId = Number(req.params.id);
-    const result = await userService.deleteUser(userId)
-    res.send(result);
-  }
-}
+router.put("/:id", async (req: Request, res: Response) => {
+  const userId = Number(req.params.id);
+  const updatedUser = await validateDTO(UpdateUserDto, req.body)
+  const result = await userService.updateUser(userId, updatedUser)
+  res.send(result);
+});
 
-export default  UserController;
+
+router.delete("/:id", async (req: Request, res: Response) => {
+  const userId = Number(req.params.id);
+  const result = await userService.deleteUser(userId)
+  res.send(result);
+});
+
+export default router;
