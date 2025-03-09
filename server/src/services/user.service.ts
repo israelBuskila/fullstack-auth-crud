@@ -1,7 +1,8 @@
 import { eq } from "drizzle-orm";
 import db from "../db/db";
 import { UserTable } from "../db/schema";
-import { User } from "../types/user.interface";
+import { CreateUserDto, UpdateUserDto } from "../dto/user.dto";
+import bcrypt from 'bcryptjs';
 
 export class UserService {
     async getAllUsers() {
@@ -16,12 +17,15 @@ export class UserService {
         return db.select().from(UserTable).where(eq(UserTable.email, email))
     }
 
-    async createUser(user: User){
-        return db.insert(UserTable).values(user).$returningId()
+    async createUser(newUser: CreateUserDto){
+        const hashedPassword = await bcrypt.hash(newUser.password, 10);
+        
+        const validUser = { ...newUser, password: hashedPassword };
+        return db.insert(UserTable).values(validUser).$returningId()
       }
 
-    async updateUser(id: number, user:User) {
-        return db.update(UserTable).set({...user}).where(eq(UserTable.id, id))
+    async updateUser(id: number, updatedUser:UpdateUserDto) {
+        return db.update(UserTable).set({...updatedUser}).where(eq(UserTable.id, id))
     }
 
     async deleteUser(id: number) {
