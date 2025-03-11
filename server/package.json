@@ -4,7 +4,8 @@
     "start": "node dist/server.js",
     "dev": "nodemon --exec ts-node src/server.ts",
     "db:generate": "npx drizzle-kit generate",
-    "db:migrate": "npx drizzle-kit migrate"
+    "db:migrate": "npx drizzle-kit migrate",
+    "db:up": "docker run -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=userdb -d -p 3306:3306 mysql:latest"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

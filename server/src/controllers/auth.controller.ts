@@ -8,6 +8,7 @@ export async function register(
   res: Response,
   next: NextFunction
 ) {
+  console.log(req.body)
   await userService.createUser(req.body);
   res.status(201).send();
 }

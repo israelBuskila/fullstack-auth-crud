@@ -18,16 +18,24 @@ export class UserService {
     }
 
     async getUserByEmail(email: string) {
-        return db.select().from(UserTable).where(eq(UserTable.email, email))
+        const user = await db.select().from(UserTable).where(eq(UserTable.email, email));
+        return user.length ? user[0] : null;
     }
 
-    async createUser(user: CreateUserDto){
+    async createUser(user: CreateUserDto) {
         const newUser = await validateDTO(CreateUserDto, user);
+    console.log(newUser)
+        const existingUser = await this.getUserByEmail(newUser.email);
+        if (existingUser) {
+            throw new Error("Email already exists");
+        }
+    
         const hashedPassword = await bcrypt.hash(newUser.password, 10);
-        
         const validUser = { ...newUser, password: hashedPassword };
-        return db.insert(UserTable).values(validUser)
-      }
+        console.log(validUser)
+        return db.insert(UserTable).values(validUser);
+    }
+    
 
     async updateUser(id: string, userData:UpdateUserDto) {
         const updatedUser = await validateDTO(UpdateUserDto, userData);
@@ -39,18 +47,19 @@ export class UserService {
     }
 
     async loginUser(credentials: LoginUserDto) {
-        console.log(credentials)
         const { email, password } = await validateDTO(LoginUserDto, credentials);
-        console.log(email, password)
-
+    
         const user = await this.getUserByEmail(email);
-        if (!user.length) return;
-        console.log(user)
-        
-        const isPasswordValid = await bcrypt.compare(password, user[0].password);
-        if (!isPasswordValid) return;
-        
-        const token = generateToken(user[0].id);
-        return token
-      }
+        if (!user) {
+            throw new Error("Invalid email or password");
+        }
+    
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new Error("Invalid email or password");
+        }
+    
+        return generateToken(user.id);
+    }
+    
   }

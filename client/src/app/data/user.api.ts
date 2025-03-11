@@ -4,7 +4,7 @@ import { api } from "./api";
 const UserApi = {
     getUsers: async () => {
         const res = await api.get('/users');
-        return res.data;
+        return res;
     },
 
     getUserById: async (id: number) => {
@@ -18,8 +18,9 @@ const UserApi = {
     },
 
     createUser: async (user: Omit<UserInterface, 'id'>) => {
-        const res = await api.post('/users', user);
-        return res.data;
+        const res = await api.post('/register', user);
+        console.log(res)
+        return res;
     },
 
     updateUser: async (user: UserInterface) => {
@@ -34,7 +35,7 @@ const UserApi = {
 
     loginUser: async (credentials: { email: string; password: string }) => {
         const res = await api.post('/login', credentials);
-        return res.data;
+        return res;
     },
 
     logoutUser: async () => {
