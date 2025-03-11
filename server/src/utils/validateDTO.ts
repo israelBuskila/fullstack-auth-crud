@@ -1,5 +1,6 @@
 import { plainToInstance } from "class-transformer";
-import { isUUID, validateOrReject, ValidationError } from "class-validator";
+import {  validateOrReject, ValidationError } from "class-validator";
+
 
 export async function validateDTO<T>(
   DTOClass: new () => T,

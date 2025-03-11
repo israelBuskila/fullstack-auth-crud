@@ -1,51 +1,33 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import { generateToken } from '../utils/authUtils';
-import { UserService } from '../services/user.service';
-import { validateDTO } from '../dto/validateDTO';
-import { CreateUserDto, LoginUserDto } from '../dto/user.dto';
+import { Request, Response, Router, NextFunction } from "express";
+import { UserService } from "../services/user.service";
 
-const router = express.Router();
 const userService = new UserService();
 
-router.post('/register', async (req, res, next) => {
-  try {
-    const newUser = await validateDTO(CreateUserDto, req.body);
-    const result = await userService.createUser(newUser);
-    res.status(201).json({ message: 'User registered successfully', result });
-  } catch (error) {
-    next(error)
-  }
-});
+export async function register(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  await userService.createUser(req.body);
+  res.status(201).send();
+}
 
-router.post('/login', async (req, res, next) => {
-  try {
-    const { email, password } = await validateDTO(LoginUserDto, req.body);
+export async function login(req: Request, res: Response, next: NextFunction) {
+  const token = await userService.loginUser(req.body)
+  console.log(token)
+  res.cookie("jwt_token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    expires: new Date(Date.now() + 3600000), // Cookie expires in 1 hour
+  }).send();
+}
 
-    const user = await userService.getUserByEmail(email);
-    if (!user.length) {
-       res.status(400).json({ message: 'No User Found!' });
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user[0].password);
-    if (!isPasswordValid) {
-       res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    const token = generateToken(user[0].id.toString());
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-    });
-     res.json({ message: 'Login successful', token });
-  } catch (error) {
-    next(error)  }
-});
-
-router.post('/logout', (req, res) => {
-  res.clearCookie('jwt');
-   res.json({ message: 'Logged out successfully' });
-});
-
-export default router;
+export async function logout(req: Request, res: Response) {
+  res.cookie("jwt_token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    expires: new Date(0),
+  }).send();
+}

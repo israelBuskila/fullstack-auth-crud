@@ -1,13 +1,13 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import db from "./db/db";
 import { migrate } from "drizzle-orm/mysql2/migrator";
-import userController from "./controllers/user.controller";
-import authController from "./controllers/auth.controller";
 import { authenticateJWT } from "./middlewares/authMiddleware";
-import { handleError } from "./middlewares/handleErrorMiddleware";
+import userRouter from './routes/user.routes'
+import authRouter from './routes/auth.routes'
+import { errorHandler } from "./middlewares/errorHandler";
 
 dotenv.config();
 
@@ -15,17 +15,23 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+const corsOptions = {
+  origin: 'http://localhost:3000', // Allow requests only from this origin
+  // methods: 'GET, POST, PUT, DELETE', // Allowed HTTP methods
+  credentials: true, // Allows the server to send cookies (important for JWT token)
+};
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-app.use(express.json());
+app.use(cors(corsOptions)); 
+app.use(express.json()); 
 app.use(cookieParser());
 
-app.use('/api', authController)
-app.use('/api/users', authenticateJWT, userController);
 
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  handleError(error, req, res, next); 
-});
+app.use('/api', authRouter)
+app.use('/api/users', authenticateJWT, userRouter);
+
+app.use(errorHandler)
+
+
 async function startServer() {
   try {
     await migrate(db, { migrationsFolder: "drizzle" });
