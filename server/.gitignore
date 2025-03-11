@@ -10,7 +10,7 @@ node_modules/
 /dist
 
 # Ignore drizzle generated files
-drizzle/
+# drizzle/
 
 # Ignore logs
 *.log
