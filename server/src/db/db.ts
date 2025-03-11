@@ -1,6 +1,6 @@
-import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/mysql2';
-  
-const db = drizzle(process.env.DATABASE_URL!);
+import { config } from '../../config';
+
+const db = drizzle(config.databaseUrl);
 
 export default db

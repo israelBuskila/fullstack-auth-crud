@@ -8,14 +8,12 @@ export async function register(
   res: Response,
   next: NextFunction
 ) {
-  console.log(req.body)
   await userService.createUser(req.body);
   res.status(201).send();
 }
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   const token = await userService.loginUser(req.body)
-  console.log(token)
   res.cookie("jwt_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

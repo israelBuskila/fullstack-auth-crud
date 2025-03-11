@@ -1,32 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../utils/authUtils'; // Assuming this is your function to verify JWT
+import { verifyToken } from '../utils/authUtils';
 
-export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies.jwt_token
-  console.log('auto')
-  // If no token is found, deny access
+interface AuthenticatedRequest extends Request {
+  user?: { id: string; email: string };
+}
+
+export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  const token = req.cookies.jwt_token;
+
   if (!token) {
-     res.status(403).send({ message: 'Access denied. No token provided.' });
+    res.status(403).send();
+    return
   }
 
   try {
-    // Verify the token using your utility function
     const decoded = verifyToken(token);
 
-    // If the token is invalid, return an error
     if (!decoded) {
-       res.status(401);
+      res.status(401).send();
+      return
     }
 
-    // Attach the decoded user data to the request object for future use
-    if (decoded && typeof decoded !== 'string') {
-      req.user = decoded as { id: string; email: string };
-    }
+    req.user = decoded as { id: string; email: string };
 
-    // Call next to pass control to the next middleware or route handler
     next();
   } catch (err) {
-    // Catch any errors thrown during verification (like expired tokens)
-     res.status(401).json({ message: 'Invalid or expired token.' });
+    res.status(401).send();
   }
 };
