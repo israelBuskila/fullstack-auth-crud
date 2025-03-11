@@ -1,5 +1,7 @@
 # Ignore environment variables file
 .env
+.env.docker
+.env.local
 
 # Ignore node_modules folder
 node_modules/
