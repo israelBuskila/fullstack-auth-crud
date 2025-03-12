@@ -108,14 +108,5 @@ If running locally without Docker but using MySQL in Docker, follow these steps:
 
 ---
 
-## ✅ Evaluation Criteria
-✔️ **Code Quality** - Clean, structured, and readable code.  
-✔️ **Server Skills** - Efficient use of Node.js & MySQL for CRUD and authentication.  
-✔️ **Security** - Proper password hashing, secure JWT handling, and protection against vulnerabilities.  
-✔️ **API Structure** - Clear separation between protected and non-protected routes.  
-✔️ **Client Skills** - React proficiency with state management and UI design.  
-✔️ **Testing** - Validations for authentication, CRUD operations, and UI functionality.  
-
----
 
 
