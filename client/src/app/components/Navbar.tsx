@@ -6,8 +6,7 @@ const Navbar: React.FC = () => {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        const res = await UserApi.logoutUser();
-        console.log(res);
+        await UserApi.logoutUser();
         navigate('/');
     };
 

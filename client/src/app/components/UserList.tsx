@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import UserApi from "../data/user.api";
+import { UserInterface } from "../types/userInterface";
 
-interface User {
-  id: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-}
+
 
 const UserListPage: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -21,7 +17,6 @@ const UserListPage: React.FC = () => {
 
       try {
         const {data} = await UserApi.getUsers()
-        console.log(data)
         setUsers(data);
       
       } catch(error) {

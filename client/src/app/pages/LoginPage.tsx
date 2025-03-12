@@ -19,8 +19,7 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      const res = await UserApi.loginUser(credentials);
-      console.log(res)
+      await UserApi.loginUser(credentials);
       navigate('/dashboard');
     } catch (err) {
       setError('Something went wrong. Please try again.');

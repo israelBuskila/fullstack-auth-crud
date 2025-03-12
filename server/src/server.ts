@@ -16,9 +16,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow requests only from this origin
-  // methods: 'GET, POST, PUT, DELETE', // Allowed HTTP methods
-  credentials: true, // Allows the server to send cookies (important for JWT token)
+  origin: 'http://localhost:3000',
+  credentials: true, 
 };
 
 app.use(cors(corsOptions)); 
